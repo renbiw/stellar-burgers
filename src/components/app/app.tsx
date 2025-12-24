@@ -9,21 +9,30 @@ import {
   ProfileOrders,
   NotFound404
 } from '@pages';
+import {fetchIngredients} from '../../services/slices/ingredientsSlice'
 import { OrderInfo } from '../order-info';
 import { IngredientDetails } from '../ingredient-details';
-import {fetchIngredients} from '../../services/slices/ingredientsSlice'
 import '../../index.css';
 import styles from './app.module.css';
  
 import { AppHeader, Modal } from '@components';
 import { Routes, Route, useNavigate, useLocation} from 'react-router-dom';
-import { Provider } from 'react-redux';
+import { useEffect } from 'react';
+import { AppDispatch } from 'src/services/store';
+import { useDispatch } from 'react-redux';
+
 
 
 
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    dispatch(fetchIngredients());
+  }, [dispatch]);
 
   // если есть background — значит открываем модалку
   const background = location.state?.background;
@@ -63,7 +72,7 @@ const App = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal title='Ингредиент' onClose={handleCloseModal}>
+              <Modal title='Детали ингредиента' onClose={handleCloseModal}>
                 <IngredientDetails />
               </Modal>
             }

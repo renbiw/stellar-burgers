@@ -3,26 +3,25 @@ import {getIngredientsApi} from '../../utils/burger-api';
 import {TIngredient} from '../../utils/types';
 
 type TinitialState = {
-  items: TIngredient[],
-  isLoading: boolean,
-  error: string|null
+   items: TIngredient[];
+  isLoading: boolean;
+  error: string | null;
 }
 
 const initialState: TinitialState = {
   items: [],
   isLoading: false,
-  error: null as string | null
+  error: null
 };
 
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchIngredients',
-   async () => {
-    const data = await getIngredientsApi();
-    return data;
+  async () => {
+    return await getIngredientsApi();
   }
 );
 
-export const ingredientsSlice  = createSlice({
+export const ingredientsSlice = createSlice({
   name: 'ingredients',
   initialState,
   reducers: {
@@ -42,15 +41,11 @@ export const ingredientsSlice  = createSlice({
       })
       .addCase(fetchIngredients.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error =
+          action.error.message || 'Ошибка загрузки ингредиентов';
       });
   }
 });
 
-
-
-// экспорт обычных action'ов
 export const { clearIngredients } = ingredientsSlice.actions;
-
-// экспорт reducer’а
 export default ingredientsSlice.reducer;
