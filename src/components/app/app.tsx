@@ -9,20 +9,19 @@ import {
   ProfileOrders,
   NotFound404
 } from '@pages';
-import {fetchIngredients} from '../../services/slices/ingredientsSlice'
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
+import { checkAuth } from '../../services/slices/userSlice';
 import { OrderInfo } from '../order-info';
 import { IngredientDetails } from '../ingredient-details';
 import '../../index.css';
 import styles from './app.module.css';
- 
+
 import { AppHeader, Modal } from '@components';
-import { Routes, Route, useNavigate, useLocation} from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AppDispatch } from 'src/services/store';
 import { useDispatch } from 'react-redux';
-
-
-
+import { ProtectedRoute } from '../protected-route/protected-route';
 
 const App = () => {
   const location = useLocation();
@@ -31,10 +30,13 @@ const App = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
+
+  useEffect(() => {
     dispatch(fetchIngredients());
   }, [dispatch]);
 
-  // если есть background — значит открываем модалку
   const background = location.state?.background;
 
   const handleCloseModal = () => {
@@ -45,28 +47,81 @@ const App = () => {
     <div className={styles.app}>
       <AppHeader />
 
-      {/* Основные маршруты */}
       <Routes location={background || location}>
+        {/* Основные маршруты */}
         <Route path='/' element={<ConstructorPage />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/forgot-password' element={<ForgotPassword />} />
-        <Route path='/reset-password' element={<ResetPassword />} />
 
+        {/* Авторизация */}
+        <Route
+          path='/login'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <Login />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/register'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <Register />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/forgot-password'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <ForgotPassword />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/reset-password'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <ResetPassword />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Лента заказов */}
         <Route path='/feed' element={<Feed />} />
         <Route path='/feed/:number' element={<OrderInfo />} />
 
+        {/* Ингредиенты */}
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
 
-        <Route path='/profile' element={<Profile />}>
-          <Route path='orders' element={<ProfileOrders />} />
-          <Route path='orders/:number' element={<OrderInfo />} />
-        </Route>
+        {/* Профиль */}
+        <Route
+          path='/profile'
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/profile/orders'
+          element={
+            <ProtectedRoute>
+              <ProfileOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <ProtectedRoute>
+              <OrderInfo />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path='*' element={<NotFound404 />} />
       </Routes>
 
-      {/* Модальные маршруты */}
+      {/* Модальные окна */}
       {background && (
         <Routes>
           <Route
@@ -86,7 +141,6 @@ const App = () => {
               </Modal>
             }
           />
-
           <Route
             path='/profile/orders/:number'
             element={
@@ -102,4 +156,3 @@ const App = () => {
 };
 
 export default App;
-

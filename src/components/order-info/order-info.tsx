@@ -1,66 +1,81 @@
-import { FC, useMemo } from 'react';
-import { Preloader } from '../ui/preloader';
-import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
+import { useEffect, useMemo } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 
-export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+import { useDispatch, useSelector } from '../../services/store';
+import { fetchFeeds } from '../../services/slices/feedSlice';
+import { fetchUserOrders } from '../../services/slices/profileOrdersSlice';
 
-  const ingredients: TIngredient[] = [];
+import { OrderInfoUI, Preloader } from '@ui';
+import { TIngredient, TOrder } from '../../utils/types';
 
-  /* Готовим данные для отображения */
-  const orderInfo = useMemo(() => {
-    if (!orderData || !ingredients.length) return null;
+type TOrderInfo = React.ComponentProps<typeof OrderInfoUI>['orderInfo'];
 
-    const date = new Date(orderData.createdAt);
+export const OrderInfo = () => {
+  const { number } = useParams<{ number: string }>();
+  const location = useLocation();
+  const dispatch = useDispatch();
 
-    type TIngredientsWithCount = {
+  const feedOrders = useSelector((store) => store.feed.orders);
+  const profileOrders = useSelector((store) => store.profileOrders.orders);
+  const ingredients = useSelector((store) => store.ingredients.items);
+  const user = useSelector((store) => store.user.user);
+
+  const isProfilePage = location.pathname.startsWith('/profile');
+
+  useEffect(() => {
+    if (isProfilePage && user && !profileOrders.length) {
+      dispatch(fetchUserOrders());
+    }
+
+    if (!isProfilePage && !feedOrders.length) {
+      dispatch(fetchFeeds());
+    }
+  }, [dispatch, isProfilePage, user, feedOrders.length, profileOrders.length]);
+
+  const orders: TOrder[] = isProfilePage ? profileOrders : feedOrders;
+
+  const orderInfo: TOrderInfo | null = useMemo(() => {
+    const order = orders.find((o) => o.number === Number(number));
+
+    if (!order || !ingredients.length) return null;
+
+    const ingredientsInfo: {
       [key: string]: TIngredient & { count: number };
-    };
+    } = {};
 
-    const ingredientsInfo = orderData.ingredients.reduce(
-      (acc: TIngredientsWithCount, item) => {
-        if (!acc[item]) {
-          const ingredient = ingredients.find((ing) => ing._id === item);
-          if (ingredient) {
-            acc[item] = {
-              ...ingredient,
-              count: 1
-            };
-          }
-        } else {
-          acc[item].count++;
-        }
+    order.ingredients.forEach((id) => {
+      const ingredient = ingredients.find((i) => i._id === id);
+      if (!ingredient) return;
 
-        return acc;
-      },
-      {}
-    );
+      if (ingredientsInfo[id]) {
+        ingredientsInfo[id].count += 1;
+      } else {
+        ingredientsInfo[id] = {
+          ...ingredient,
+          count: 1
+        };
+      }
+    });
 
     const total = Object.values(ingredientsInfo).reduce(
-      (acc, item) => acc + item.price * item.count,
+      (sum, item) => sum + item.price * item.count,
       0
     );
 
     return {
-      ...orderData,
+      ...order,
       ingredientsInfo,
-      date,
+      date: new Date(order.createdAt),
       total
     };
-  }, [orderData, ingredients]);
+  }, [orders, number, ingredients]);
+
+  if (!orders.length || !ingredients.length) {
+    return <Preloader />;
+  }
 
   if (!orderInfo) {
-    return <Preloader />;
+    return <p className='text text_type_main-medium'>Заказ не найден</p>;
   }
 
   return <OrderInfoUI orderInfo={orderInfo} />;

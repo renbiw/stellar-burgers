@@ -6,6 +6,7 @@ import commonStyles from '../common.module.css';
 
 import { ProfileUIProps } from './type';
 import { ProfileMenu } from '@components';
+import clsx from 'clsx';
 
 export const ProfileUI: FC<ProfileUIProps> = ({
   formValue,
@@ -15,12 +16,12 @@ export const ProfileUI: FC<ProfileUIProps> = ({
   handleCancel,
   handleInputChange
 }) => (
-  <main className={`${commonStyles.container}`}>
-    <div className={`mt-30 mr-15 ${styles.menu}`}>
+  <main className={commonStyles.container}>
+    <div className={clsx(styles.menu, 'mt-30', 'mr-15 ')}>
       <ProfileMenu />
     </div>
     <form
-      className={`mt-30 ${styles.form} ${commonStyles.form}`}
+      className={clsx(styles.form, commonStyles.form, 'mt-30')}
       onSubmit={handleSubmit}
     >
       <>
@@ -80,7 +81,12 @@ export const ProfileUI: FC<ProfileUIProps> = ({
         )}
         {updateUserError && (
           <p
-            className={`${commonStyles.error} pt-5 text text_type_main-default`}
+            className={clsx(
+              commonStyles.error,
+              'pt-5 ',
+              'text',
+              'text_type_main-default'
+            )}
           >
             {updateUserError}
           </p>

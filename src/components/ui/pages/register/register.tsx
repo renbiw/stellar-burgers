@@ -7,6 +7,7 @@ import {
 import styles from '../common.module.css';
 import { Link } from 'react-router-dom';
 import { RegisterUIProps } from './type';
+import clsx from 'clsx';
 
 export const RegisterUI: FC<RegisterUIProps> = ({
   errorText,
@@ -19,10 +20,14 @@ export const RegisterUI: FC<RegisterUIProps> = ({
   setUserName
 }) => (
   <main className={styles.container}>
-    <div className={`pt-6 ${styles.wrapCenter}`}>
-      <h3 className='pb-6 text text_type_main-medium'>Регистрация</h3>
+    ;
+    <div className={clsx('pt-6', styles.wrapCenter)}>
+      <h3 className={clsx('pb-6', 'text', 'text_type_main-medium')}>
+        Регистрация
+      </h3>
+
       <form
-        className={`pb-15 ${styles.form}`}
+        className={clsx('pb-15', styles.form)}
         name='register'
         onSubmit={handleSubmit}
       >
@@ -39,18 +44,20 @@ export const RegisterUI: FC<RegisterUIProps> = ({
               size='default'
             />
           </div>
+
           <div className='pb-6'>
             <Input
               type='email'
               placeholder='E-mail'
               onChange={(e) => setEmail(e.target.value)}
               value={email}
-              name={'email'}
+              name='email'
               error={false}
               errorText=''
-              size={'default'}
+              size='default'
             />
           </div>
+
           <div className='pb-6'>
             <PasswordInput
               onChange={(e) => setPassword(e.target.value)}
@@ -58,21 +65,38 @@ export const RegisterUI: FC<RegisterUIProps> = ({
               name='password'
             />
           </div>
-          <div className={`pb-6 ${styles.button}`}>
+
+          <div className={clsx('pb-6', styles.button)}>
             <Button type='primary' size='medium' htmlType='submit'>
               Зарегистрироваться
             </Button>
           </div>
+
           {errorText && (
-            <p className={`${styles.error} text text_type_main-default pb-6`}>
+            <p
+              className={clsx(
+                styles.error,
+                'text',
+                'text_type_main-default',
+                'pb-6'
+              )}
+            >
               {errorText}
             </p>
           )}
         </>
       </form>
-      <div className={`${styles.question} text text_type_main-default pb-6`}>
+
+      <div
+        className={clsx(
+          styles.question,
+          'text',
+          'text_type_main-default',
+          'pb-6'
+        )}
+      >
         Уже зарегистрированы?
-        <Link to='/login' className={`pl-2 ${styles.link}`}>
+        <Link to='/login' className={clsx('pl-2', styles.link)}>
           Войти
         </Link>
       </div>

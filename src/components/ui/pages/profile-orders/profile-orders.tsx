@@ -4,13 +4,14 @@ import styles from './profile-orders.module.css';
 
 import { ProfileOrdersUIProps } from './type';
 import { ProfileMenu, OrdersList } from '@components';
+import clsx from 'clsx';
 
 export const ProfileOrdersUI: FC<ProfileOrdersUIProps> = ({ orders }) => (
-  <main className={`${styles.main}`}>
-    <div className={`mt-30 mr-15 ${styles.menu}`}>
+  <main className={styles.main}>
+    <div className={clsx(styles.menu, 'mt-30', ' mr-15')}>
       <ProfileMenu />
     </div>
-    <div className={`mt-10 ${styles.orders}`}>
+    <div className={clsx(styles.orders, 'mt-10')}>
       <OrdersList orders={orders} />
     </div>
   </main>

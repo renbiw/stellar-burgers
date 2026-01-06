@@ -1,5 +1,5 @@
 import { FC, memo } from 'react';
-import { useLocation} from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { nanoid } from '@reduxjs/toolkit';
 import { addIngredient, setBun } from '../../services/slices/constructorSlice';
