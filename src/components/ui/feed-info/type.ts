@@ -1,5 +1,7 @@
+import { FeedState } from '../../../services/slices/feedSlice';
+
 export type FeedInfoUIProps = {
-  feed: any;
+  feed: FeedState;
   readyOrders: number[];
   pendingOrders: number[];
 };

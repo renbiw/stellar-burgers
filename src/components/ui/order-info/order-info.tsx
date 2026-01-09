@@ -12,6 +12,16 @@ import clsx from 'clsx';
 
 export const OrderInfoUI: FC<OrderInfoUIProps> = memo(({ orderInfo }) => (
   <div className={styles.wrap}>
+    <p
+      className={clsx(
+        styles.number,
+        'text',
+        'text_type_digits-default',
+        ' mb-5'
+      )}
+    >
+      #{orderInfo.number}
+    </p>
     <h3
       className={clsx(
         'text',

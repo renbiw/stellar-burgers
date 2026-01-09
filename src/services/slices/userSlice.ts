@@ -27,84 +27,99 @@ const initialState: UserState = {
 };
 
 // Проверка авторизации
-export const checkAuth = createAsyncThunk(
+export const checkAuth = createAsyncThunk<TUser, void, { rejectValue: string }>(
   'user/checkAuth',
   async (_, { rejectWithValue }) => {
     try {
       const response = await getUserApi();
       return response.user;
-    } catch (error) {
+    } catch (error: unknown) {
       return rejectWithValue('Ошибка проверки авторизации');
     }
   }
 );
 
 // Регистрация
-export const registerUser = createAsyncThunk(
-  'user/register',
-  async (data: TRegisterData, { rejectWithValue }) => {
-    try {
-      const response = await registerUserApi(data);
+export const registerUser = createAsyncThunk<
+  TUser,
+  TRegisterData,
+  { rejectValue: string }
+>('user/register', async (data, { rejectWithValue }) => {
+  try {
+    const response = await registerUserApi(data);
 
-      // Сохраняем токены
-      localStorage.setItem('refreshToken', response.refreshToken);
-      setCookie('accessToken', response.accessToken);
+    localStorage.setItem('refreshToken', response.refreshToken);
+    setCookie('accessToken', response.accessToken);
 
-      return response.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка регистрации');
+    return response.user;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
     }
+
+    return rejectWithValue('Ошибка регистрации');
   }
-);
+});
 
 // Логин
-export const loginUser = createAsyncThunk(
-  'user/login',
-  async (data: TLoginData, { rejectWithValue }) => {
-    try {
-      const response = await loginUserApi(data);
+export const loginUser = createAsyncThunk<
+  TUser,
+  TLoginData,
+  { rejectValue: string }
+>('user/login', async (data, { rejectWithValue }) => {
+  try {
+    const response = await loginUserApi(data);
 
-      // Сохраняем токены
-      localStorage.setItem('refreshToken', response.refreshToken);
-      setCookie('accessToken', response.accessToken);
+    localStorage.setItem('refreshToken', response.refreshToken);
+    setCookie('accessToken', response.accessToken);
 
-      return response.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка авторизации');
+    return response.user;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
     }
+
+    return rejectWithValue('Ошибка авторизации');
   }
-);
+});
 
 // Выход
-export const logoutUser = createAsyncThunk(
+export const logoutUser = createAsyncThunk<null, void, { rejectValue: string }>(
   'user/logout',
   async (_, { rejectWithValue }) => {
     try {
       await logoutApi();
 
-      // Удаляем токены
       localStorage.removeItem('refreshToken');
       deleteCookie('accessToken');
 
       return null;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка выхода');
-    }
-  }
-);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
 
-// Обновление данных пользователя
-export const updateUser = createAsyncThunk(
-  'user/updateUser',
-  async (data: Partial<TRegisterData>, { rejectWithValue }) => {
-    try {
-      const response = await updateUserApi(data);
-      return response.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка обновления профиля');
+      return rejectWithValue('Ошибка выхода');
     }
   }
 );
+// Обновление данных пользователя
+export const updateUser = createAsyncThunk<
+  TUser,
+  Partial<TRegisterData>,
+  { rejectValue: string }
+>('user/updateUser', async (data, { rejectWithValue }) => {
+  try {
+    const response = await updateUserApi(data);
+    return response.user;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    }
+
+    return rejectWithValue('Ошибка обновления профиля');
+  }
+});
 
 const userSlice = createSlice({
   name: 'user',

@@ -1,5 +1,4 @@
-import { useSelector } from 'react-redux';
-import { RootState } from '../../services/store';
+import { RootState, useSelector } from '../../services/store';
 import styles from './constructor-page.module.css';
 
 import { BurgerIngredients } from '../../components';

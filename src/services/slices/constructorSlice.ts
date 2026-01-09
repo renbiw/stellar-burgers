@@ -2,15 +2,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TConstructorIngredient, TOrder } from '@utils-types';
 import { nanoid } from '@reduxjs/toolkit';
 
-type TConstructorState = {
-  constructorItems: {
-    bun: TConstructorIngredient | null;
-    ingredients: TConstructorIngredient[];
-  };
+export type TConstructorItems = {
+  bun: TConstructorIngredient | null;
+  ingredients: TConstructorIngredient[];
+};
+
+export type TConstructorState = {
+  constructorItems: TConstructorItems;
   orderRequest: boolean;
   orderModalData: TOrder | null;
 };
-
 const initialState: TConstructorState = {
   constructorItems: {
     bun: null,

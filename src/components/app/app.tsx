@@ -19,15 +19,14 @@ import styles from './app.module.css';
 import { AppHeader, Modal } from '@components';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { AppDispatch } from 'src/services/store';
-import { useDispatch } from 'react-redux';
+import { useDispatch } from '../../services/store';
 import { ProtectedRoute } from '../protected-route/protected-route';
 
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(checkAuth());
@@ -136,7 +135,7 @@ const App = () => {
           <Route
             path='/feed/:number'
             element={
-              <Modal title='Заказ' onClose={handleCloseModal}>
+              <Modal onClose={handleCloseModal}>
                 <OrderInfo />
               </Modal>
             }
@@ -144,7 +143,7 @@ const App = () => {
           <Route
             path='/profile/orders/:number'
             element={
-              <Modal title='Заказ' onClose={handleCloseModal}>
+              <Modal onClose={handleCloseModal}>
                 <OrderInfo />
               </Modal>
             }

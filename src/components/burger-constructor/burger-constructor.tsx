@@ -27,10 +27,6 @@ export const BurgerConstructor: FC = () => {
       return;
     }
 
-    if (constructorItems.ingredients.length === 0) {
-      return;
-    }
-
     const ids = [
       constructorItems.bun._id,
       ...constructorItems.ingredients.map((i) => i._id),
