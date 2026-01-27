@@ -3,8 +3,8 @@
   "data": [
     {
       "_id": "643d69a5c3f7b9001cfa093c",
-      "name": "Краторная булка N-200i",
-      "type": "bun",
+      "name": "Биокотлета из лосося",
+      "type": "main",
       "proteins": 80,
       "fat": 24,
       "carbohydrates": 53,
@@ -16,8 +16,8 @@
     },
     {
       "_id": "643d69a5c3f7b9001cfa093c",
-      "name": "Биокотлета из лосося",
-      "type": "main",
+      "name": "Краторная булка N-200i",
+      "type": "bun",
       "proteins": 80,
       "fat": 24,
       "carbohydrates": 53,

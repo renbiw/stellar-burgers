@@ -21,36 +21,52 @@ describe('Конструктор бургера', () => {
 
   describe('Модальные окна ингредиента', () => {
     it('открывается модальное окно ингредиента', () => {
-      cy.contains('Биокотлета').click();
+      cy.contains('[data-cy=ingredient-link]', 'Биокотлета').click();
 
-      cy.contains('Детали ингредиента').should('be.visible');
-      cy.contains('Биокотлета').should('be.visible');
+      cy.get('[data-cy=modal]')
+        .contains('Детали ингредиента')
+        .should('be.visible');
+      cy.get('[data-cy=modal]').contains('Биокотлета').should('exist');
     });
 
     it('закрывается по клику на крестик', () => {
-      cy.contains('Биокотлета').click();
+      cy.contains('[data-cy=ingredient-link]', 'Биокотлета').click();
 
-      cy.contains('Детали ингредиента')
-        .closest('div') // модальное окно
-        .within(() => {
-          cy.get('button').first().click();
-        });
+      cy.get('[data-cy=modal]').within(() => {
+        cy.contains('Детали ингредиента').should('be.visible');
+        // клик по кнопке
+        cy.get('button').first().click();
+      });
 
-      cy.contains('Детали ингредиента').should('not.exist');
+      cy.get('[data-cy=modal]').should('not.exist');
     });
 
     it('закрывается по клику на оверлей', () => {
-      cy.contains('Биокотлета').click();
-      cy.contains('Детали ингредиента').should('be.visible');
-
+      cy.contains('[data-cy=ingredient-link]', 'Биокотлета').click();
+      cy.get('[data-cy=modal]').should('exist');
       // клик по оверлею
       cy.get('body').click(0, 0);
 
-      cy.contains('Детали ингредиента').should('not.exist');
+      cy.get('[data-cy=modal]').should('not.exist');
     });
   });
 
   describe('Создание заказа', () => {
+    it('добавление ингредиента в конструктор', () => {
+      cy.contains('булка')
+        .parents('li')
+        .contains('Добавить')
+        .click({ force: true });
+
+      cy.contains('Биокотлета')
+        .parents('li')
+        .contains('Добавить')
+        .click({ force: true });
+
+      cy.get('[data-cy=burger-constructor]').within(() => {
+        cy.contains('Биокотлета').should('exist');
+      });
+    });
     it('оформление заказа', () => {
       cy.contains('булка')
         .parents('li')
@@ -66,16 +82,20 @@ describe('Конструктор бургера', () => {
 
       cy.wait('@order');
 
-      cy.contains('12345').should('exist');
+      cy.get('[data-cy=modal]').contains('12345').should('exist');
 
       cy.get('body').type('{esc}');
 
-      cy.contains('Выберите булки').should('exist');
-      cy.contains('Выберите начинку').should('exist');
+      cy.get('[data-cy=burger-constructor]')
+        .contains('Выберите булки')
+        .should('exist');
+      cy.get('[data-cy=burger-constructor]')
+        .contains('Выберите начинку')
+        .should('exist');
     });
   });
   afterEach(() => {
-  cy.clearCookies();
-  cy.clearLocalStorage();
-});
+    cy.clearCookies();
+    cy.clearLocalStorage();
+  });
 });
